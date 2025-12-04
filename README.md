@@ -2,60 +2,59 @@
 
 ### 1. Team Formation & Roles Definition (Task 0)
 
-*   **Équipe :** Projet solo.
-*   **Membre :** rpokman
-    *   **Description :** Développeur en formation, passionné par l'écosystème de League of Legends et le développement full-stack. L'objectif de ce projet est de monter en compétences sur la création d'une application web de A à Z, de la base de données à l'interface utilisateur, en passant par l'intégration d'une API externe.
-*   **Rôles Assumés :**
-    *   **Project Manager :** Responsable de la planification, de la définition du périmètre (scope) et du respect des objectifs du MVP.
-    *   **Full-Stack Developer :** En charge du développement du backend (serveur, base de données, logique métier, authentification) et du frontend (interface utilisateur, expérience utilisateur).
-    *   **API Integrator :** Gère la connexion, les appels et le traitement des données provenant de l'API externe de Riot Games.
-    *   **Documentation Owner :** Responsable de la rédaction et de la maintenance de la documentation du projet.
-*   **Outils de Collaboration & Documentation :**
-    *   **Gestion de projet et de version :** GitHub (incluant les README pour la documentation et GitHub Projects pour le suivi des tâches).
+*   **Team:** Solo Project.
+*   **Member:** rpokman
+    *   **Description:** Developer in training, passionate about the League of Legends ecosystem and full-stack development. The goal of this project is to develop skills in creating a web application from A to Z, from the database to the user interface, including the integration of an external API.
+*   **Assumed Roles:**
+    *   **Project Manager:** Responsible for planning, defining the scope, and ensuring MVP objectives are met.
+    *   **Full-Stack Developer:** In charge of backend development (server, database, business logic, authentication) and frontend (user interface, user experience).
+    *   **API Integrator:** Manages the connection, API calls, and processing of data coming from the Riot Games external API.
+    *   **Documentation Owner:** Responsible for writing and maintaining project documentation.
+*   **Collaboration & Documentation Tools:**
+    *   **Project Management and Versioning:** GitHub (including READMEs for documentation and GitHub Projects for task tracking).
 
 ### 2. Idea Selection and Justification (Task 1)
 
-L'idée de ce projet était claire dès le départ, motivée par un intérêt personnel pour League of Legends et l'envie de créer un outil utile à la communauté. Plutôt qu'un brainstorming dispersé, la réflexion s'est concentrée sur la validation de cette unique idée en la comparant aux alternatives classiques pour un projet de portfolio.
+The idea for this project was clear from the start, motivated by a personal interest in League of Legends and the desire to create a useful tool for the community. Rather than a scattered brainstorming session, the reflection focused on validating this single idea by comparing it to classic alternatives for a portfolio project.
 
-L'idée d'un outil de theorycrafting complet a été retenue car elle présente un défi technique bien plus pertinent qu'un simple site vitrine et est plus originale et motivante qu'un clone d'application existante. Elle permet de démontrer un large éventail de compétences full-stack (backend, frontend, base de données, authentification) et l'intégration complexe d'une API tierce (Riot API), ce qui correspond parfaitement aux objectifs d'apprentissage.
+The idea of a comprehensive theorycrafting tool was chosen because it presents a much more relevant technical challenge than a simple showcase site and is more original and motivating than a clone of an existing application. It allows demonstrating a wide range of full-stack skills (backend, frontend, database, authentication) and the complex integration of a third-party API (Riot API), which corresponds perfectly to learning objectives.
 
 ### 3. Selected MVP: Decision and Refinement (Task 2)
 
-#### **Nom Provisoire du Projet**
+#### **Provisional Project Name**
 
 *   *SlotDiff*
 
-#### **Problème, Solution et Cible**
+#### **Problem, Solution, and Target**
 
-*   **Le Problème :** De nombreux joueurs de League of Legends, qu'ils soient nouveaux ou expérimentés, peinent à visualiser l'impact réel de leurs choix d'items et de runes. Ils font souvent des erreurs dans leurs builds, ce qui diminue leur efficacité et leur taux de victoire. Il manque un outil centralisé qui combine théorie pure (calculs) et données réelles (matchs/tierlists) de manière simple.
-*   **La Solution :** Une application web tout-en-un où un utilisateur peut non seulement théoriser des builds précis avec des comparatifs de dégâts, mais aussi consulter la "meta" actuelle via une tierlist et analyser l'historique de joueurs réels.
-*   **La Cible Utilisateur :** Tout joueur de League of Legends souhaitant optimiser ses performances, du débutant cherchant les meilleurs champions du moment au joueur vétéran voulant affiner ses calculs de dégâts.
+*   **The Problem:** Many League of Legends players, whether new or experienced, struggle to visualize the real impact of their item and rune choices. They often make mistakes in their builds, which decreases their efficiency and win rate. There is a lack of a centralized tool that combines pure theory (calculations) and real data (matches/tierlists) in a simple way.
+*   **The Solution:** An all-in-one web application where a user can not only theorize precise builds with damage comparisons but also consult the current "meta" via a tierlist and analyze the history of real players.
+*   **The User Target:** Any League of Legends player wishing to optimize their performance, from the beginner looking for the best current champions to the veteran player wanting to refine their damage calculations.
 
-#### **Périmètre du MVP (Scope)**
+#### **MVP Scope**
 
-*   **Type d'application :** Application Web (site internet).
-*   **Fonctionnalités In-Scope (ce que le MVP fera) :**
-    1.  **Système d'Authentification :** Création de compte, connexion et déconnexion des utilisateurs.
-    2.  **Constructeur de Build (Theorycraft) :** Interface pour sélectionner un champion, des items, des runes et définir le niveau.
-    3.  **Sauvegarde de Builds :** Les utilisateurs connectés peuvent sauvegarder leurs builds sur leur compte.
-    4.  **Outil de Comparaison "SlotDiff" :** Un tableau comparatif pour visualiser l'impact de deux items différents sur un même slot de build, contre des cibles avec différents niveaux d'armure/résistance magique.
-    5.  **Calculateur de Dégâts par Sort :** Un tableau affichant les dégâts de chaque sort du champion en fonction du build sélectionné.
-    6.  **Recherche de Joueur (Summoner Search) :** Barre de recherche permettant de trouver un joueur via son Riot ID et de consulter son historique de matchs récents.
-    7.  **Tierlist Meta :** Une page dédiée affichant le classement des meilleurs champions par rôle (Top, Jungle, Mid, ADC, Support) basé sur les données actuelles.
-    8.  **Intégration API Riot :** Utilisation de l'API pour récupérer les données statiques (items/champions), les données de matchs (historique) et les données de ligue.
+*   **Application Type:** Web Application (website).
+*   **In-Scope Features (What the MVP will do):**
+    1.  **Authentication System:** Account creation, user login, and logout.
+    2.  **Build Constructor (Theorycraft):** Interface to select a champion, items, runes, and define the level.
+    3.  **Build Saving:** Logged-in users can save their builds to their account.
+    4.  **"SlotDiff" Comparison Tool:** A comparison table to visualize the impact of two different items on the same build slot against targets with different armor/magic resistance levels.
+    5.  **Damage Calculator per Spell:** A table displaying the damage of each champion spell based on the selected build.
+    6.  **Player Search (Summoner Search):** Search bar allowing to find a player via their Riot ID and view their recent match history.
+    7.  **Meta Tierlist:** A dedicated page displaying the ranking of the best champions by role (Top, Jungle, Mid, ADC, Support) based on current data.
+    8.  **Riot API Integration:** Use of the API to retrieve static data (items/champions), match data (history), and league data.
 
-*   **Fonctionnalités Out-of-Scope (ce que le MVP ne fera pas) :**
-    *   Importation automatique des runes directement dans le client du jeu.
-    *   Fonctionnalités sociales avancées (commentaires, votes sur les builds).
-    *   Coaching IA ou analyse de replay vidéo.
-    *   Support pour d'autres jeux (TFT, Valorant).
+*   **Out-of-Scope Features (What the MVP will not do):**
+    *   Automatic import of runes directly into the game client.
+    *   Advanced social features (comments, voting on builds).
+    *   AI coaching or video replay analysis.
+    *   Support for other games (TFT, Valorant).
 
-#### **Risques et Stratégies d'Atténuation**
+#### **Risks and Mitigation Strategies**
 
-*   **Risque 1 : Complexité et limites de l'API Riot Games.**
-    *   **Atténuation :** L'ajout de l'historique et des tierlists demande beaucoup de requêtes. Il faudra mettre en place un système de mise en cache (caching) efficace pour ne pas dépasser les "rate limits" et éviter de rappeler l'API inutilement pour les mêmes données.
-*   **Risque 2 : Précision des calculs de dégâts.**
-    *   **Atténuation :** Commencer par implémenter les formules pour un petit groupe de champions populaires pour valider la logique avant de l'étendre à tous les personnages.
-*   **Risque 3 : Charge de travail (Scope Creep).**
-    *   **Atténuation :** Avec l'ajout des fonctionnalités de recherche et de tierlist, le projet est ambitieux. L'utilisation stricte de GitHub Projects pour prioriser les tâches sera cruciale. Si le temps manque, la partie "Tierlist" pourra être simplifiée (ex: mise à jour manuelle ou moins fréquente) pour privilégier le cœur du projet (Theorycraft + Recherche).
-
+*   **Risk 1: Complexity and limits of the Riot Games API.**
+    *   **Mitigation:** Adding history and tierlists requires many requests. An efficient caching system will need to be implemented to not exceed "rate limits" and avoid calling the API unnecessarily for the same data.
+*   **Risk 2: Precision of damage calculations.**
+    *   **Mitigation:** Start by implementing formulas for a small group of popular champions to validate logic before extending it to all characters.
+*   **Risk 3: Workload (Scope Creep).**
+    *   **Mitigation:** With the addition of search and tierlist features, the project is ambitious. Strict use of GitHub Projects to prioritize tasks will be crucial. If time runs short, the "Tierlist" part can be simplified (e.g., manual update or less frequent) to prioritize the core of the project (Theorycraft + Search).
