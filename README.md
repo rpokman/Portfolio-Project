@@ -1,6 +1,6 @@
 # Stage 1 Report: Portfolio Project
 
-### 1. Team Formation & Roles Definition (Task 0)
+### 1. Team Formation & Roles Definition
 
 *   **Team:** Solo Project.
 *   **Member:** rpokman
@@ -58,3 +58,42 @@ The idea of a comprehensive theorycrafting tool was chosen because it presents a
     *   **Mitigation:** Start by implementing formulas for a small group of popular champions to validate logic before extending it to all characters.
 *   **Risk 3: Workload (Scope Creep).**
     *   **Mitigation:** With the addition of search and tierlist features, the project is ambitious. Strict use of GitHub Projects to prioritize tasks will be crucial. If time runs short, the "Tierlist" part can be simplified (e.g., manual update or less frequent) to prioritize the core of the project (Theorycraft + Search).
+
+### 4. High-Level Project Plan (Stage 2)
+
+This timeline provides a high-level overview of the project's major phases and key milestones.
+
+*   **Week 1: Foundations**
+    *   **Stage 1: Idea Development (Completed):** The project concept, scope, and MVP features were defined.
+        *   *Deliverable: Stage 1 Report.*
+    *   **Stage 2: Project Planning (Current):** This high-level plan is created.
+        *   *Deliverable: Project Timeline.*
+
+*   **Week 2-3: Technical Design**
+    *   **Stage 3: Technical Documentation:** Focus on designing the technical architecture before writing code.
+        *   *Milestones:*
+            *   Define the database schema (user tables, builds, etc.).
+            *   Design the API endpoints (e.g., `/api/users/register`, `/api/builds`, `/api/player/:riotId`).
+            *   Create simple diagrams for the application flow.
+
+*   **Week 4-10: Development**
+    *   **Stage 4: MVP Development:** The core phase of building the application, broken down into sprints.
+        *   *Milestones (Week 4-5): Backend Foundations*
+            *   Set up the server and project structure.
+            *   Implement the database and user authentication system (registration, login).
+        *   *Milestones (Week 6-7): Core Logic & API*
+            *   Integrate the Riot API for fetching champion/item data and player match history.
+            *   Develop the backend logic for saving and retrieving user builds.
+        *   *Milestones (Week 8-9): Frontend Implementation*
+            *   Develop the user interface for the main pages: Build Constructor, Player Search, and Tierlist.
+            *   Connect the frontend to the backend API endpoints.
+        *   *Milestones (Week 10): Integration & Testing*
+            *   End-to-end testing of all features.
+            *   Bug fixing and final adjustments.
+
+*   **Week 11: Finalization**
+    *   **Stage 5: Project Closure:** Prepare the project for final submission and presentation.
+        *   *Milestones:*
+            *   Deploy the application to a live server.
+            *   Finalize the `README.md` with a link to the live demo and setup instructions.
+            *   Prepare the final project presentation.
