@@ -31,191 +31,80 @@ The idea of a comprehensive theorycrafting tool was chosen because it presents a
 *   **The Solution:** A web application focused on theorycrafting where users can create precise builds, calculate damage outputs, and compare item choices side-by-side to optimize their performance.
 *   **The User Target:** Any League of Legends player wishing to optimize their performance through better understanding of game mechanics, from beginners learning about builds to veteran players wanting to refine their damage calculations.
 
-#### **MVP Scope - Core Features (Priority 0)**
+#### **MVP Scope**
 
 *   **Application Type:** Web Application (website).
-*   **Core Features (What the MVP MUST have):**
-    
-    1.  **Authentication System**
-        *   Account creation, user login, and logout
-        *   JWT-based session management
-        *   User profile page
-        *   **Data Source:** Application Database
-        *   **Riot API Calls:** None
-    
-    2.  **Build Constructor (Theorycraft)**
-        *   Interface to select a champion from the complete roster
-        *   Selection of 6 items with stats preview
-        *   Selection of primary and secondary runes
-        *   Champion level selection (1-18)
-        *   Automatic calculation of total stats (AD, AP, Armor, MR, HP, etc.)
-        *   **Data Source:** Data Dragon (Riot's CDN - no rate limits)
-        *   **Riot API Calls:** None
-    
-    3.  **Build Saving System**
-        *   Save created builds to user account
-        *   "My Builds" page showing all saved builds
-        *   Edit/Delete existing builds
-        *   Public/Private build visibility option
-        *   **Data Source:** Application Database
-        *   **Riot API Calls:** None
-    
-    4.  **Damage Calculator per Spell**
-        *   Display all champion abilities (Q, W, E, R)
-        *   Calculate damage for each spell based on current build
-        *   Variable inputs: Spell level, Target Armor/MR
-        *   Damage comparison table against different resistance levels
-        *   **Data Source:** Data Dragon + Custom damage formulas
-        *   **Riot API Calls:** None
-        *   **Note:** Start with 5-10 popular champions, expand gradually
-    
-    5.  **"SlotDiff" Comparison Tool**
-        *   Compare two different items in the same build slot
-        *   Display stat differences between items
-        *   Calculate and compare damage output against various Armor/MR values
-        *   Visual representation of which item performs better in different scenarios
-        *   **Data Source:** Data Dragon + Custom calculations
-        *   **Riot API Calls:** None
+*   **In-Scope Features (What the MVP will do):**
+    1.  **Authentication System:** Account creation, user login, and logout.
+        *   *Data Source: Application Database | Riot API Calls: None*
+    2.  **Build Constructor (Theorycraft):** Interface to select a champion, items, runes, and define the level.
+        *   *Data Source: Data Dragon (Riot CDN - no rate limits) | Riot API Calls: None*
+    3.  **Build Saving:** Logged-in users can save their builds to their account.
+        *   *Data Source: Application Database | Riot API Calls: None*
+    4.  **"SlotDiff" Comparison Tool:** A comparison table to visualize the impact of two different items on the same build slot against targets with different armor/magic resistance levels.
+        *   *Data Source: Data Dragon + Custom calculations | Riot API Calls: None*
+    5.  **Damage Calculator per Spell:** A table displaying the damage of each champion spell based on the selected build.
+        *   *Data Source: Data Dragon + Custom formulas | Riot API Calls: None*
+        *   *Note: Start with 5-10 popular champions, expand gradually*
+    6.  **Player Search (Summoner Search):** Search bar allowing to find a player via their Riot ID and view their recent match history.
+        *   *Data Source: Riot API | API Calls: ~12 per search (manageable with Development Key)*
+        *   *Optimization: 5-minute cache per player*
+    7.  **Riot Account Verification:** Users can link their Riot account by changing their in-game profile icon to a randomly generated one, which the app verifies.
+        *   *Data Source: Riot API | API Calls: ~2 per verification attempt*
+        *   *Enables linking user builds to their Riot account*
 
-#### **Secondary Features (Priority 1 - Time Permitting)**
-
-6.  **Player Search & Match History**
-    *   Search bar for players using Riot ID (GameName#TagLine)
-    *   Display last 10 matches of searched player
-    *   For each match: Champion played, KDA, Win/Loss, Final items
-    *   **Data Source:** Riot API
-    *   **API Calls:** ~12 calls per search (within Development Key limits)
-    *   **Optimization:** 5-minute cache per player search
-    *   **Rate Limit Impact:** Low (manageable with Development Key)
-
-7.  **Riot Account Verification via Profile Icon**
-    *   User links their Riot account to the application
-    *   Verification process: User changes in-game profile icon to randomly generated one
-    *   Application verifies icon change via API
-    *   Upon verification, user's builds are linked to their Riot account
-    *   **Data Source:** Riot API
-    *   **API Calls:** 2 calls per verification attempt
-    *   **Rate Limit Impact:** Minimal
-
-#### **Out-of-Scope Features (Post-MVP)**
-
-*   **Meta Tierlist:** Requires millions of API calls to aggregate reliable statistics. Alternative: Use Kaggle datasets or manual curation, or implement post-MVP with Production API Key.
-*   **Automatic rune import** into game client.
-*   **Advanced social features** (comments, voting on builds, build sharing).
-*   **AI coaching** or video replay analysis.
-*   **Support for other games** (TFT, Valorant).
-
-#### **Data Sources Strategy**
-
-**Primary Data Sources:**
-*   **Data Dragon (Riot CDN - No API Key Required):**
-    *   Champions data (names, stats, abilities, images)
-    *   Items data (stats, prices, icons)
-    *   Runes data (effects, images)
-    *   Summoner spells data
-    *   **No rate limits, publicly accessible JSON files**
-
-*   **Application Database:**
-    *   User accounts and authentication
-    *   Saved builds
-    *   Account verification status
-
-*   **Riot API (With Development Key Limits):**
-    *   Player search and match history (Priority 1 feature)
-    *   Account verification (Priority 1 feature)
-    *   **Development Key Limits:** 20 requests/second, 100 requests/2 minutes
+*   **Out-of-Scope Features (What the MVP will not do):**
+    *   **Meta Tierlist:** Requires millions of API calls to aggregate reliable statistics. Can be added post-MVP with Kaggle datasets or Production API Key.
+    *   Automatic import of runes directly into the game client.
+    *   Advanced social features (comments, voting on builds).
+    *   AI coaching or video replay analysis.
+    *   Support for other games (TFT, Valorant).
 
 #### **Risks and Mitigation Strategies**
 
-*   **Risk 1: Complexity of damage calculation formulas**
-    *   **Mitigation:** Start by implementing formulas for 5-10 popular champions (e.g., Jinx, Ezreal, Ahri, Zed, Darius) to validate the calculation logic. Expand champion pool incrementally after core functionality is proven.
+*   **Risk 1: Complexity and limits of the Riot Games API.**
+    *   **Mitigation:** Core features (Build Constructor, Calculator, SlotDiff) use Data Dragon only, which has no rate limits. Player Search uses minimal API calls with caching. Account verification is optional and uses only 2 calls per attempt.
+*   **Risk 2: Precision of damage calculations.**
+    *   **Mitigation:** Start by implementing formulas for a small group of popular champions (5-10) to validate logic before extending it to all characters.
+*   **Risk 3: Workload (Scope Creep).**
+    *   **Mitigation:** Strict prioritization. Core theorycrafting features (P0) are independent of API limitations. Player Search and Account Verification are secondary (P1) and can be postponed if needed.
 
-*   **Risk 2: Riot API rate limits for Player Search feature**
-    *   **Mitigation:** Implement caching system (5-minute cache per player). Add rate limiting on frontend to prevent abuse. Monitor API usage and display clear error messages if limits are reached.
+### 4. High-Level Project Plan (Stage 2)
 
-*   **Risk 3: Workload and scope creep**
-    *   **Mitigation:** Strict prioritization using P0 (Core) and P1 (Secondary) features. If time is limited, Player Search and Account Verification can be postponed to post-MVP without affecting core functionality demonstration.
+This timeline provides a high-level overview of the project's major phases and key milestones.
 
-*   **Risk 4: Damage formula accuracy**
-    *   **Mitigation:** Focus on physical and magic damage basics first. Add complex mechanics (true damage, penetration interactions, conditional effects) incrementally. Document any known limitations.
+*   **Week 1: Foundations**
+    *   **Stage 1: Idea Development (Completed):** The project concept, scope, and MVP features were defined.
+        *   *Deliverable: Stage 1 Report.*
+    *   **Stage 2: Project Planning (Current):** This high-level plan is created.
+        *   *Deliverable: Project Timeline.*
 
-#### **Technical Architecture Overview**
+*   **Week 2-3: Technical Design**
+    *   **Stage 3: Technical Documentation:** Focus on designing the technical architecture before writing code.
+        *   *Milestones:*
+            *   Define the database schema (user tables, builds, etc.).
+            *   Design the API endpoints (e.g., `/api/users/register`, `/api/builds`, `/api/player/:riotId`).
+            *   Create simple diagrams for the application flow.
 
-**Frontend:**
-*   Modern JavaScript framework (React/Vue recommended)
-*   Responsive design for desktop and mobile
-*   State management for build construction
-*   API client for backend communication
+*   **Week 4-10: Development**
+    *   **Stage 4: MVP Development:** The core phase of building the application, broken down into sprints.
+        *   *Milestones (Week 4-5): Backend Foundations*
+            *   Set up the server and project structure.
+            *   Implement the database and user authentication system (registration, login).
+        *   *Milestones (Week 6-7): Core Logic & API*
+            *   Integrate Data Dragon for champion/item/rune data.
+            *   Integrate the Riot API for player search and account verification.
+            *   Develop the backend logic for saving and retrieving user builds.
+        *   *Milestones (Week 8-9): Frontend Implementation*
+            *   Develop the user interface for the main pages: Build Constructor, Damage Calculator, SlotDiff, and Player Search.
+            *   Connect the frontend to the backend API endpoints.
+        *   *Milestones (Week 10): Integration & Testing*
+            *   End-to-end testing of all features.
+            *   Bug fixing and final adjustments.
 
-**Backend:**
-*   Node.js with Express (or similar)
-*   RESTful API architecture
-*   JWT authentication
-*   Caching layer for Riot API responses
-*   Rate limiting middleware
-
-**Database:**
-*   PostgreSQL or MongoDB
-*   Tables: Users, Builds, VerificationPending (for account linking)
-
-**External APIs:**
-*   Data Dragon (CDN) for static game data
-*   Riot API for player search and verification (limited use)
-
-#### **Deployment Strategy**
-
-**For Local Development:**
-*   Application fully functional with Development API Key
-*   All core features (P0) work without API key limitations
-
-**For Production Deployment (Post-MVP):**
-*   Frontend: Vercel or Netlify
-*   Backend: Render or Railway
-*   Database: Managed PostgreSQL (Render/Railway)
-*   Caching: Redis (optional for optimization)
-*   **API Key Requirements:**
-    *   Core features (Build Constructor, Calculator, SlotDiff) work without Production API Key
-    *   Player Search feature requires Production API Key for public deployment
-    *   Account Verification requires Production API Key for public deployment
-*   **Note:** Application can be deployed with Player Search disabled if Production Key is not obtained, without affecting core demonstration value.
-
-### 4. Development Timeline
-
-*   **Phase 1: Backend Foundation (Week 1-2)**
-    *   Project setup (Node.js + Express + Database)
-    *   Authentication system (register, login, JWT)
-    *   Database models (User, Build)
-
-*   **Phase 2: Core Features (Week 3-5)**
-    *   Data Dragon integration (champions, items, runes)
-    *   Build Constructor (frontend + backend)
-    *   Build saving and retrieval system
-
-*   **Phase 3: Calculation Engine (Week 6-8)**
-    *   Damage calculator implementation (5-10 champions)
-    *   SlotDiff comparison tool
-    *   Testing and formula validation
-
-*   **Phase 4: Secondary Features (Week 9-10)**
-    *   Player search + match history (if time permits)
-    *   Riot account verification system (if time permits)
-
-*   **Phase 5: Polish & Deployment (Week 11)**
-    *   End-to-end testing
-    *   Bug fixes and optimizations
-    *   Documentation finalization
-    *   Presentation preparation
-
-### 5. Success Criteria for RNCP Level 5
-
-This project demonstrates:
-*   ✅ **Full-stack development:** Frontend, Backend, and Database integration
-*   ✅ **External API integration:** Riot API and Data Dragon
-*   ✅ **Secure authentication:** JWT-based system with password hashing
-*   ✅ **Complex business logic:** Damage calculation formulas and stat aggregation
-*   ✅ **User experience design:** Creative account verification method
-*   ✅ **Constraint management:** Working within API rate limits and technical limitations
-*   ✅ **Scalable architecture:** Designed for future feature additions
-*   ✅ **Project management:** Clear prioritization and scope management
-
-The core features (P0) are sufficient for RNCP Level 5 validation and can be fully demonstrated without Production API Key limitations.
+*   **Week 11: Finalization**
+    *   **Stage 5: Project Closure:** Prepare the project for final submission and presentation.
+        *   *Milestones:*
+            *   Deploy the application to a live server (or document deployment strategy if Production API Key is required).
+            *   Finalize the `README.md` with a link to the live demo and setup instructions.
+            *   Prepare the final project presentation.
