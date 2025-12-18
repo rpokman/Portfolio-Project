@@ -1,133 +1,211 @@
-# Technical Documentation - BuildForge: LoL Build Manager
+# Technical Documentation — BuildForge (LoL Theorycrafting & Build Manager)
 
-## 0. User Stories & Mockups
+## 0. Purpose & MVP Alignment
 
-### User Stories
-We have prioritized our user stories using the **MoSCoW** method to ensure the MVP focuses on core value.
-
-#### Must Have (Critical for MVP)
-*   **Champion Selection:** "As a user, I want to search and select a champion from the full roster so that I can start creating a specific build for them."
-*   **Item Selection:** "As a user, I want to fill my 6 item slots and 1 trinket slot with valid items so that I can visualize my full in-game equipment."
-*   **Build Validation:** "As a user, I want to be prevented from selecting incompatible items (e.g., two pairs of boots, Mythic restrictions if applicable) so that my build is realistic."
-*   **Rune Configuration:** "As a user, I want to select a Primary and Secondary Rune path so that I can complete my champion's setup."
-
-#### Should Have (Important)
-*   **Build Saving:** "As a registered user, I want to save my builds with a custom name so that I can access them later."
-*   **Build Dashboard:** "As a registered user, I want to view a list of my saved builds so that I can edit or delete them."
-
-#### Could Have (Nice to have)
-*   **Stat Calculation:** "As a user, I want to see the total stats (AP, AD, Haste) of my build so that I can analyze its theoretical power."
-*   **Sharing:** "As a user, I want to generate a shareable link for my build so that I can show it to friends."
-
-### Mockups
-*Mockups are visual representations of these stories.*
-1.  **Champion Select (Home):** Grid of champion portraits + Search Bar.
-2.  **The Forge (Builder):** Central view with Champion stats (left), Item slots (center), and Rune tree (right).
-3.  **User Dashboard:** List of saved builds with "Edit" and "Delete" actions.
+BuildForge is a web application focused on League of Legends theorycrafting: build creation, validation, damage/stat calculations, and optional Riot-powered player features.
+This technical documentation is aligned with the MVP scope described in the repository README:
+- Authentication (register/login/logout).
+- Build constructor (champion/items/runes/level) using Data Dragon.
+- Build saving (per user).
+- SlotDiff comparison tool.
+- Damage calculator per spell (start with a limited champion pool).
+- Summoner search (recent matches).
+- Riot account verification (profile icon challenge).
 
 ---
 
-## 1. System Architecture
+## 1. User Stories & Mockups (MoSCoW)
+
+### Must Have (Critical for MVP)
+* **Authentication:** "As a user, I want to create an account and log in so that I can save and manage my builds."
+* **Champion selection:** "As a user, I want to select a champion so that I can create a build for them."
+* **Item selection:** "As a user, I want to fill 6 item slots + 1 trinket slot so that I can simulate my full equipment."
+* **Build validation:** "As a user, I want to be prevented from selecting incompatible items (e.g., duplicate boots) so that the build is realistic."
+* **Rune configuration:** "As a user, I want to select Primary and Secondary rune paths so that the build matches in-game rules."
+* **SlotDiff comparison:** "As a user, I want to compare two items in the same slot against different resistances so that I can decide the best choice."
+* **Damage per spell (limited champions):** "As a user, I want to see spell damages based on my build so that I can theorycraft outcomes."
+
+### Should Have (Important / P1)
+* **Build saving:** "As a logged-in user, I want to save builds with a name so that I can reuse them."
+* **Build dashboard:** "As a logged-in user, I want to list, view, delete my saved builds so that I can manage them."
+* **Summoner search:** "As a user, I want to search a player by Riot ID and view recent matches so that I can inspect activity/build choices."
+* **Riot account verification:** "As a logged-in user, I want to link my Riot account via a profile icon challenge so that my account can be verified."
+
+### Could Have (Nice to have / Post-MVP)
+* **Shareable build links:** "As a user, I want to share my build via a link so that I can send it to friends."
+* **Full champion coverage for damage formulas** (expand gradually after correctness is validated).
+* **Advanced caching & background refresh jobs** (e.g., match history snapshots).
+
+### Mockups (Textual)
+1. **Home / Champion Select:** champion grid + search bar.
+2. **Builder ("The Forge"):** champion panel, item slots, runes panel, level selector, calculators (SlotDiff + spell damage).
+3. **My Builds:** list + view details + delete.
+4. **Summoner Search:** search bar + profile header + recent matches list.
+5. **Account Linking:** verification screen with icon challenge steps.
+
+---
+
+## 2. System Architecture
 
 ### High-Level Architecture Diagram
-This diagram illustrates the separation of concerns between our Client, Server, and Data layers.
-
 ![System Architecture](images/System%20Architecture%20Diagram%20BuildForge.png)
 
-### Data Flow
-1.  **Initialization:** The Front-End fetches static data (Items, Champions) directly from Riot's **Data Dragon** (CDN) to reduce server load.
-2.  **User Action:** When a user saves a build, the Front-End sends a JSON payload to the FastAPI Back-End.
-3.  **Processing:** FastAPI validates the token (Auth) and the build data.
-4.  **Storage:** Valid data is written to **PostgreSQL** via SQLAlchemy.
-5.  **Retrieval:** When loading "My Builds", the Back-End queries PostgreSQL and returns a list of build objects to the Front-End.
+### Components
+- **Front-End (Vanilla JS + Tailwind CSS):**
+  - **HTML5:** Semantic structure of the application.
+  - **Tailwind CSS:** Utility-first styling for a responsive and modern UI.
+  - **Vanilla JavaScript (ES6+):** Direct DOM manipulation to handle interactivity (champion selection, item slots logic, API calls). No heavy framework.
+  - Fetches static game data from **Data Dragon** (CDN).
+- **Back-End (FastAPI):**
+  - Authentication (JWT).
+  - Build CRUD & validation rules.
+  - Riot API gateway endpoints.
+  - Caching layer for Riot responses (5-minute cache for player search).
+- **Database (PostgreSQL + SQLAlchemy):**
+  - Users, builds, and linked Riot account data.
+- **External Sources:**
+  - **Riot Data Dragon (static)**: champions, items, runes, images.
+  - **Riot Developer API (live)**: account, summoner profile, match history.
+
+### Data Flow (Typical)
+1. **Initialization:** `script.js` fetches champion/item data from Data Dragon on page load.
+2. **Interactivity:** JS Event Listeners handle user clicks (e.g., adding an item to a slot).
+3. **Build Save:** A simple `fetch()` request sends the JSON payload to the FastAPI backend.
+4. **Summoner search:** Front-End requests FastAPI `/players/search`; FastAPI calls Riot API and caches results for 5 minutes.
+5. **Account verification:** FastAPI issues a random icon challenge; user changes icon; FastAPI verifies via Riot profile call.
 
 ---
 
-## 2. Components, Classes, and Database Design
+## 3. Domain Model & Database Design
 
-### Back-End Classes (FastAPI/Pydantic Models)
-
-*   **User:** Handles authentication and identification.
-    *   `id` (int): Unique identifier.
-    *   `username` (str): Display name.
-    *   `email` (str): Login credential.
-    *   `password_hash` (str): Secured password.
-*   **Build:** Represents a complete configuration.
-    *   `id` (int): Unique identifier.
-    *   `title` (str): Name of the build (e.g., "Tank Teemo").
-    *   `champion_id` (str): Riot API ID (e.g., "Teemo").
-    *   `items` (List[int]): Array of item IDs.
-    *   `runes` (JSON): Structure containing selected runes.
-    *   `user_id` (int): Foreign key to User.
+### Core Entities (Conceptual)
+* **User**
+  * `id` (int)
+  * `username` (str)
+  * `email` (str)
+  * `password_hash` (str)
+  * `created_at` (datetime)
+* **Build**
+  * `id` (int)
+  * `title` (str)
+  * `champion_id` (str) — e.g. "Teemo"
+  * `level` (int)
+  * `items` (int[]) — item IDs
+  * `trinket` (int | null)
+  * `runes` (jsonb)
+  * `user_id` (int, FK -> User)
+  * `created_at` (datetime)
+* **RiotAccountLink** (optional but recommended for verification feature)
+  * `id` (int)
+  * `user_id` (int, FK -> User)
+  * `game_name` (str)
+  * `tag_line` (str)
+  * `puuid` (str)
+  * `region` (str)
+  * `verified_at` (datetime | null)
 
 ### Database Design (ER Diagram)
-
-We use a Relational Database (**PostgreSQL**) to ensure data integrity between Users and their Builds.
-
 ![Database Design](images/Database%20Design%20Diagram%20BuildForge.png)
 
 ---
 
-## 3. High-Level Sequence Diagrams
+## 4. Key Use Cases (Sequences)
 
 ### Use Case 1: User Saves a New Build
-
 ![User Saves Build](images/User%20Saves%20a%20New%20Build%20Diagram%20BuildForge.png)
 
 ### Use Case 2: User Logs In
-
 ![User Login](images/User%20Logs%20In%20Diagram%20BuildForge.png)
 
----
-
-## 4. API Specifications
-
-### External APIs
-*   **Riot Games API (Data Dragon):**
-    *   **Why:** Official source of truth for League of Legends data (Champions, Items, Runes, Icons). It provides static JSON files and images.
-    *   **Usage:** Fetched primarily by the Front-End to display images and descriptions without taxing our own database.
-
-### Internal API (FastAPI Endpoints)
-
-| Method | Endpoint | Description | Request Body (Input) | Response (Output) |
-| :--- | :--- | :--- | :--- | :--- |
-| **POST** | `/auth/register` | Register new user | `{ "username": "...", "email": "...", "password": "..." }` | `{ "id": 1, "username": "..." }` |
-| **POST** | `/auth/login` | Log in user | `{ "username": "...", "password": "..." }` | `{ "access_token": "...", "token_type": "bearer" }` |
-| **GET** | `/builds` | Get user's builds | *Header: Authorization* | `[ { "id": 1, "title": "...", "champion": "..." }, ... ]` |
-| **POST** | `/builds` | Create new build | `{ "title": "...", "champion_id": "...", "items": [...] }` | `{ "id": 2, "message": "Build created" }` |
-| **GET** | `/builds/{id}` | Get specific build | *None* | `{ "id": 1, "title": "...", "items": [...] }` |
-| **DELETE**| `/builds/{id}` | Delete a build | *Header: Authorization* | `{ "message": "Deleted successfully" }` |
+### Use Case 3: Summoner Search (High-Level)
+**Sequence (text)**
+1. Front-End -> FastAPI: `/players/search?riotId=GameName#TAG&region=...`
+2. FastAPI -> Cache: check `riotId+region` key
+3. If miss: FastAPI -> Riot API: account lookup -> summoner/profile -> matches
+4. FastAPI -> Cache: store response with TTL=5 min
+5. FastAPI -> Front-End: return normalized player + recent matches
 
 ---
 
-## 5. SCM and QA Strategies
+## 5. API Specifications
 
-### Source Control Management (SCM)
-*   **Versioning:** Git hosted on GitHub.
-*   **Branching Strategy:**
-    *   `main`: Production-ready code. No direct commits allowed.
-    *   `dev`: Integration branch. All features merge here first.
-    *   `feature/feature-name`: Temporary branches for specific tasks (e.g., `feature/auth-login`, `feature/champion-grid`).
-*   **Workflow:**
-    1.  Create a feature branch from `dev`.
-    2.  Develop and test locally.
-    3.  Open a Pull Request (PR) to `dev`.
-    4.  Code Review by at least one peer before merging.
+## 5.1 External APIs
 
-### Quality Assurance (QA) Strategy
-*   **Testing Types:**
-    *   **Unit Testing (Back-End):** Using `pytest` to test API endpoints and database models in isolation.
-    *   **Manual Testing:** Verifying UI flows (Drag & Drop, Saving) manually before each merge.
-*   **Tools:**
-    *   **Pytest:** For Python backend tests.
-    *   **Postman:** For manual API endpoint testing.
-    *   **ESLint/Prettier:** To ensure code style consistency on the Front-End.
+### Riot Data Dragon (Static CDN)
+Used for champions, items, runes, and images; fetched mainly by the Front-End.
+
+### Riot Developer API (Live)
+Used for Summoner Search and Account Verification.
+Caching policy: Summoner search responses cached for ~5 minutes per player.
 
 ---
 
-## 6. Technical Justifications
+## 5.2 Internal API (FastAPI Endpoints)
 
-*   **FastAPI:** Chosen for its speed (async support), automatic documentation (Swagger UI), and strict data validation with Pydantic, which reduces bugs significantly compared to Flask.
-*   **PostgreSQL:** Chosen over MongoDB because our data is structured (Users have Builds) and relational integrity is important for account management.
-*   **React + Vite:** React is the industry standard for dynamic UIs. Vite is selected for its superior build performance and developer experience compared to Create React App.
-*   **Riot Data Dragon:** Using the static CDN instead of the live API endpoints allows us to avoid rate limits and ensures the app works fast even if Riot's game servers are busy.
+### Auth
+| Method | Endpoint | Description | Request Body | Response |
+|---|---|---|---|---|
+| POST | `/auth/register` | Register user | `{ "username": "...", "email": "...", "password": "..." }` | `{ "id": 1, "username": "..." }` |
+| POST | `/auth/login` | Login user | `{ "username": "...", "password": "..." }` | `{ "access_token": "...", "token_type": "bearer" }` |
+| POST | `/auth/logout` | Logout | *(none)* | `{ "message": "Logged out" }` |
+
+### Builds
+| Method | Endpoint | Description | Request Body | Response |
+|---|---|---|---|---|
+| GET | `/builds` | List my builds | *(Auth header)* | `[ { "id": 1, "title": "..." }, ... ]` |
+| POST | `/builds` | Create build | `{ "title": "...", "champion_id": "...", "items": [...], "runes": {...} }` | `{ "id": 2, "message": "Build created" }` |
+| GET | `/builds/{id}` | Get build details | *(Auth recommended)* | `{ "id": 1, "items": [...], "runes": {...} }` |
+| DELETE | `/builds/{id}` | Delete build | *(Auth header)* | `{ "message": "Deleted successfully" }` |
+
+### Players & Verification
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/players/search` | Search by Riot ID + region |
+| POST | `/riot/verification/start` | Start icon challenge |
+| POST | `/riot/verification/confirm` | Confirm icon challenge |
+
+---
+
+## 6. Validation & Calculation Rules (MVP)
+
+### Build Validation
+- Exactly 6 item slots + 1 trinket slot.
+- Boots uniqueness rule (no duplicate boots).
+- Reject invalid item IDs not found in Data Dragon.
+
+### Calculators
+- **SlotDiff:** compare two item candidates with same baseline build.
+- **Damage per spell:** formulas implemented for a limited champion pool initially.
+
+---
+
+## 7. SCM and QA Strategies
+
+### Source Control (GitHub)
+- `main`: stable.
+- `dev`: integration.
+- `feature/*`: feature branches with PRs.
+
+### QA Strategy
+- **Backend:** Unit tests with `pytest` for auth, CRUD, and calculation logic.
+- **Frontend:**
+  - **Linting:** Standard ESLint for JavaScript.
+  - **Manual Testing:** Verifying DOM updates and calculations manually across browsers.
+  - No framework-specific testing tools required.
+
+---
+
+## 8. Technical Justifications
+
+### Why Vanilla JavaScript over React/Vue?
+*   **Performance:** Removes the overhead of a Virtual DOM and heavy bundle sizes. The app loads instantly.
+*   **Mastery:** Demonstrates a deep understanding of core web technologies (DOM API, Event Loop, Fetch API) without relying on abstractions.
+*   **Simplicity:** For a single-page MVP, direct DOM manipulation is sufficient and avoids complex build chains.
+
+### Why Tailwind CSS?
+*   **Speed:** Allows rapid UI prototyping directly in the HTML classes without context switching to CSS files.
+*   **Consistency:** Ensures a cohesive design system (spacing, colors) out of the box.
+
+### Why FastAPI & PostgreSQL?
+*   **FastAPI:** Provides high-performance async endpoints and automatic documentation (Swagger UI), perfect for a clear API contract with the Vanilla JS frontend.
+*   **PostgreSQL:** Essential for structured relational data (Users <-> Builds).
